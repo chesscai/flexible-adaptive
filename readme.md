@@ -3,11 +3,14 @@
 ## flexible解读及应用
 
 原文: http://www.w3cplus.com/mobile/lib-flexible-for-html5-layout.html
+
 大漠的文章（简洁）：https://github.com/amfe/article/issues/17
+
 giuhub：https://github.com/amfe/lib-flexible
 
 本文主要介绍的是如何使用Flexible库来完成H5页面的终端适配。为什么推荐使用Flexible库来做H5页面的终端设备适配呢？主要因为这个库在手淘已经使用了近一年，而且已达到了较为稳定的状态。
 其实H5适配的方案有很多种，网上有关于这方面的教程也非常的多。移动端适配原理大同小异，大部分是通过控制根元素<html>的font-size值实现设备宽度的适配（通常是宽度）。
+
 **方案一：浏览器缩放viewport**
 >简单方便，像素失真
 

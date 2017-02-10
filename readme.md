@@ -215,13 +215,63 @@ adaptive是基于flexible的h5翻屏适配解决方案，是对flexible的dpr和
 	//以i6 uc为例
 	alert(docEl.clientHeight);//559
 	win.scrollTo(0,0);
-	alert(docEl.clientHeight);//585
+	alert(docEl.clientHeight);//585，不错，是我要的结果
 ```
 
-在autoScale函数前加入 win.scrollTo(0,0); 解决了问题
+在autoScale函数前加入 win.scrollTo(0,0); 哼哼，这把该可以了吧
 ```javascript
 	var autoScale = function(){
 		win.scrollTo(0,0);
 		...
 	}
 ```
+
+什么！还是不行？![bq](http://images.vrm.cn/2017/02/10/bq.png "bq")。。。
+long long after 我又回头看了flexible的源码，才发现
+```javascript
+	win.addEventListener('resize', function() {
+       clearTimeout(tid);
+       tid = setTimeout(refreshRem, 300);
+    }, false);
+```
+
+天了噜，win.scrollTo(0,0); 解决的问题，resize又让他一夜回到解放前。考虑到手机端resize的情况很少见，不像pc可以拖拽，于是为了配合adaptive，我把resize监听注释了。问题解决！
+
+**坑2：浏览器回退**
+之前没考虑到浏览器回退的情况，展哥提供的bug，发现会有放大情况。曾老师提供思路，于是问题很快解决。浏览器回退不会触发onload但会触发pageshow，之前adaptive没有监听pageshow，而flexible有，于是。。。  加了监听事件，大功告成。
+
+### 优化
+0.1.2版本加入了横竖屏判断和提示，横屏会添加遮罩，提示“请使用竖屏浏览”。
+
+### 使用
+example：http://70.vrm.cn/8
+
+在head引入flexible.js，adaptive.js，有前后依赖关系
+```html
+	<script src="/local-assets/js/flexible/flexible-0.3.2.js"></script>
+	<script src="/local-assets/js/flexible/adaptive-0.1.2.js"></script>
+```
+
+在flexible基础上无痛修改，其他该怎么写怎么写，请参照前文。
+另外：如有设计稿尺寸不一致，只需修改 designW，designH的值即可。
+
+等等，wap页面还要兼容pc？
+好吧，pc怎么排版合适？想了想：高度满屏，宽度自适应可以不
+pc，wap代码分管的，直接在pc以上js文件后插入；如果用一份代码，判断ua去吧~
+```javascript
+	<script>
+        (function(win,doc){
+            var wh = win.innerHeight;
+            var dh = 1136;
+            var dw = 640;
+            var h = wh;
+            var w = dw * wh / dh;
+            var docEl = doc.documentElement;
+            setTimeout(function(){
+                docEl.style.cssText = 'width:'+ w +'px;height:'+ h +'px;margin:0 auto;font-size:'+ w/10 + 'px';},300);
+        })(window,document);
+    </script>
+```
+
+### 结语
+本文到此结束，开发中遇到的问题均已修复，如发现任何bug或可优化的地方欢迎随时回复交流

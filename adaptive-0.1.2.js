@@ -1,6 +1,6 @@
 /*
 ** 移动端翻屏适配方案 FROM chess
-** Update【2016年12月02日】
+** Update【2017年02月16日】
 */
 
 (function(win,doc){
@@ -10,8 +10,8 @@
         win.scrollTo(0,0);                               //解决android首次加载会截去标题栏高度
         var designW = 640,                               //设计稿宽
             designH = 1136,                              //设计稿高
-            winW = docEl.clientWidth,                    //实际可视区宽
-            winH = docEl.clientHeight,                   //实际可视区高
+            winW = win.innerWidth,                       //实际可视区宽
+            winH = win.innerHeight,                      //实际可视区高
             idealFs = parseFloat(docEl.style.fontSize),  //理想基准字号（既flexible计算字号）
             idealH = winW * designH / designW,           //理想可视区高（根据设计稿等比缩放计算高度）
             exactFs = winH * idealFs / idealH,           //准确基准字号（最终结果）
@@ -23,14 +23,18 @@
         docEl.style.fontSize = exactFs + 'px';
     };
 
+    function refreshFs(){
+        clearTimeout(tid);
+        tid = setTimeout(autoScale, 300);
+    }
+
     win.addEventListener('pageshow', function(e) {
         if (e.persisted) {
-            clearTimeout(tid);
-            tid = setTimeout(autoScale, 300);
+            refreshFs();
         }
     }, false);
 
-    autoScale();
+    refreshFs();
 
     var mask = doc.createElement('div');
     var maskChild = doc.createElement('div');

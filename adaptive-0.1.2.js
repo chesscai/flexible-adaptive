@@ -45,16 +45,13 @@
 
     //横竖屏提示
     win.addEventListener('onorientationchange' in win ? 'orientationchange' : 'resize',function(){
-        var orientation = win.orientation;
-        var isMask = doc.querySelector('div[role="landdScapeMask"]');
-        if(orientation === 180 || orientation === 0){
-            if(isMask){
-                docEl.removeChild(isMask);
-            }
-        }else if(orientation === 90 || orientation === -90){
-            if(!isMask){
-                docEl.appendChild(mask);
-            }
+        // 原orientation属性已被废弃
+        var isLandscape = window.innerWidth > window.innerHeight
+        var maskEle = doc.querySelector('div[role="landdScapeMask"]');
+        if(isLandscape){
+            if (!maskEle) docEl.appendChild(mask);
+        }else{
+          if (maskEle) docEl.removeChild(maskEle);
         }
     },false);
 

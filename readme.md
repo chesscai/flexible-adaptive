@@ -33,8 +33,6 @@ giuhub：https://github.com/amfe/lib-flexible
 	
 ```
 **方案三：淘宝flexible**
->市面流行，经受的住数亿网民的考验
-
 
 ### 源码解读
 **实际上：flexible计算dpr，通过width和dpr计算fontSize；对于dpr不等于1的设备，则通过viewport缩小，fontSize放大，达到设配高清屏的目的。**
@@ -134,12 +132,13 @@ flexible的viewport是这样写的：
 ```javascript
 	metaEl.setAttribute('content', 'initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
 ```
-读到这里寂寞的读者会发现，flexible没有直接定义device-width？好吧，上文挑重点说：
+读到这里会发现，flexible没有直接定义device-width？
 ```html
 	<meta name="viewport" content="initial-scale=1">
 	<meta name="viewport" content="width=device-width">
 ```
->这两句代码能达到一样的效果，也可以把当前的的viewport变为 ideal viewport。缩放是相对于什么来缩放的？因为这里的缩放值是1，也就是没缩放，但却达到了 ideal viewport 的效果，所以，那答案就只有一个了，缩放是相对于 ideal viewport来进行缩放的，当对ideal viewport进行100%的缩放，也就是缩放值为1的时候，不就得到了 ideal viewport吗？事实证明，的确是这样的。当两者同时存在时取其最大值。
+
+> 这两句代码能达到一样的效果，也可以把当前的的viewport变为 ideal viewport。缩放是相对于什么来缩放的？因为这里的缩放值是1，也就是没缩放，但却达到了 ideal viewport 的效果，所以，那答案就只有一个了，缩放是相对于 ideal viewport来进行缩放的，当对ideal viewport进行100%的缩放，也就是缩放值为1的时候，不就得到了 ideal viewport吗？事实证明，的确是这样的。当两者同时存在时取其最大值。
 
 **附：**
 ```javascript
@@ -148,9 +147,11 @@ flexible的viewport是这样写的：
 	initial-scale = 1 ==> 100% * ideal-viewport
 ```
 <hr>
+
 ### 使用
 在head引入flexible.js
->使用flexible就不要设置metaviewport了，因为会阻断后面的执行，详情看源码；除非你想自定义dpr
+
+> 使用flexible就不要设置metaviewport了，因为会阻断后面的执行，详情看源码；除非你想自定义dpr
 
 ```html
 	//直接加载cdn文件（其中css文件非必须）
@@ -166,10 +167,10 @@ flexible的viewport是这样写的：
 adaptive是基于flexible的h5翻屏适配解决方案，是对flexible的dpr和fontSize的计算结果，进一步精准计算并动态改写。简言之：flexible适配设备宽度，adaptive适配设备高度。
 
 ### 怎么样算适配好
-一个场景：一副满屏的背景图片，怎么样才是适配到各个设备？长宽比不同的设备，总要有所取舍，你想 background-size: 100% | contain | cover; 100%会拉伸，contain会留白，cover会裁切。这时候傻逼运营来了：这页面有bug，图片显示不全balabala。我就问你what are you fucking doing？
-回到正题，估计做翻屏遇到最多的问题就是页面元素显示不全了吧，因为往往浏览器五花八门的标题栏和功能区会占据可视区域。
-以本工厂单屏设计稿为例： 640 * 1136（i5，ISUX给的宽高比则比较合理：320 * 504，减去了标题栏高度），
-另一个极端机子MX4 可视区是384 * 518，问你死了没
+一个场景：一副满屏的背景图片，怎么样才是适配到各个设备？长宽比不同的设备，总要有所取舍，你想 background-size: 100% | contain | cover; 100%会拉伸，contain会留白，cover会裁切。
+做翻屏遇到最多的问题就是页面元素显示不全了吧，因为往往浏览器五花八门的标题栏和功能区会占据可视区域。
+以单屏设计稿为例： 640 * 1136（i5，ISUX给的宽高比则比较合理：320 * 504，减去了标题栏高度），
+另一个极端机子MX4 可视区是384 * 518，
 ![极端](http://images.vrm.cn/2017/02/07/p1.jpg "设计稿")
 那么这种情况下，这样显示比较合理？显然，信息肯定要显示全，排版不能乱。要满足此需求，估计只有缩小元素了吧，如果有更好的点子还望不吝赐教。
 ![排版](http://images.vrm.cn/2017/02/07/p2.jpg "设计稿")
@@ -192,6 +193,7 @@ adaptive是基于flexible的h5翻屏适配解决方案，是对flexible的dpr和
 ```
 上码定义了设计稿宽高，实际可视区宽高，理想情况下：这两组数据的比值相等，那么也就没这里什么事了。然鹅这是不可能滴，实际上，iphone5 640 * 1136 的宽高比是比较极端的了，相比绝大部分机子是比较“高”的，所以计算出最终fs结果是变小的。
 分析一下以上函数：
+
 >1.根据设计稿宽高（已知）和实际可视宽度计算出理想可视区高idealH，所谓理想，既是上文提到的理想宽高比值与设计稿的相等
 >2.根据理想可视区高idealH计算出准确基准字号exactFs
 >3.把exactFs赋值给根元素就可以了
@@ -210,7 +212,7 @@ adaptive是基于flexible的h5翻屏适配解决方案，是对flexible的dpr和
 
 ### 生产中遇到的坑
 **坑1：安卓机获取可视区高前后不一致**
-测试中发现，“前后”具体体现在滚动过页面，首次加载的高度比滚动后二次加载的高度小，得益于之前调研上表时做了大量测试，原因是滚动后浏览器会收起标题栏释放了占有的高度，这就导致了页面元素太大而溢出可视区，不信？试试。那么既然问题出在滚动上，以其人之道还治其人之身：
+测试中发现，“前后”具体体现在滚动过页面，首次加载的高度比滚动后二次加载的高度小，得益于之前调研上表时做了大量测试，原因是滚动后浏览器会收起标题栏释放了占有的高度，这就导致了页面元素太大而溢出可视区。那么既然问题出在滚动上，以其人之道还治其人之身：
 ```javascript
 	//以i6 uc为例
 	alert(docEl.clientHeight);//559
@@ -218,7 +220,7 @@ adaptive是基于flexible的h5翻屏适配解决方案，是对flexible的dpr和
 	alert(docEl.clientHeight);//585，不错，是我要的结果
 ```
 
-在autoScale函数前加入 win.scrollTo(0,0); 哼哼，这把该可以了吧
+在autoScale函数前加入 win.scrollTo(0,0); 这把该可以了吧！
 ```javascript
 	var autoScale = function(){
 		win.scrollTo(0,0);
@@ -227,7 +229,7 @@ adaptive是基于flexible的h5翻屏适配解决方案，是对flexible的dpr和
 ```
 
 什么！还是不行？![bq](http://images.vrm.cn/2017/02/10/bq.png "bq")。。。
-long long after 我又回头看了flexible的源码，才发现
+回头看flexible的源码，才发现
 ```javascript
 	win.addEventListener('resize', function() {
        clearTimeout(tid);
@@ -235,10 +237,10 @@ long long after 我又回头看了flexible的源码，才发现
     }, false);
 ```
 
-天了噜，win.scrollTo(0,0); 解决的问题，resize又让他一夜回到解放前。考虑到手机端resize的情况很少见，不像pc可以拖拽，于是为了配合adaptive，我把resize监听注释了。问题解决！
+win.scrollTo(0,0); 解决的问题，resize又让他一夜回到解放前。考虑到手机端resize的情况很少见，不像pc可以拖拽，于是为了配合adaptive，我把resize监听注释了。问题解决！
 
 **坑2：浏览器回退**
-之前没考虑到浏览器回退的情况，展哥提供的bug，发现会有放大情况。曾老师提供思路，于是问题很快解决。浏览器回退不会触发onload但会触发pageshow，之前adaptive没有监听pageshow，而flexible有，于是。。。  加了监听事件，大功告成。
+之前没考虑到浏览器回退，发现会有放大情况。浏览器回退不会触发onload但会触发pageshow，之前adaptive没有监听pageshow，而flexible有，于是加了监听事件，大功告成。
 
 ### 优化
 0.1.2版本加入了横竖屏判断和提示，横屏会添加遮罩，提示“请使用竖屏浏览”。
@@ -255,9 +257,10 @@ example：http://70.vrm.cn/8
 在flexible基础上无痛修改，其他该怎么写怎么写，请参照前文。
 另外：如有设计稿尺寸不一致，只需修改 designW，designH的值即可。
 
-等等，wap页面还要兼容pc？
-好吧，pc怎么排版合适？想了想：高度满屏，宽度自适应可以不
-pc，wap代码分管的，直接在pc以上js文件后插入；如果用一份代码，判断ua去吧~
+### wap页面怎么兼容pc？
+pc怎么排版合适？大部分是高度满屏，宽度自适应。
+在 pc 插入以下逻辑：
+
 ```javascript
 	<script>
         (function(win,doc){

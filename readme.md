@@ -1,5 +1,15 @@
 # flexible+adaptive
-基于淘宝适配方案flexible + 翻屏h5 适配方案adaptive
+
+ 适配宽度方案flexible + 适配高度方案adaptive
+
+ rem: 基于html font-size 的相对单位
+
+ flexible：解决屏幕宽度适配问题
+
+ adaptive：解决屏幕高度适配问题
+
+ ![排版](http://images.vrm.cn/2017/02/07/p2.jpg "设计稿")
+
 ## flexible解读及应用
 
 原文: http://www.w3cplus.com/mobile/lib-flexible-for-html5-layout.html
@@ -172,7 +182,7 @@ adaptive是基于flexible的h5翻屏适配解决方案，是对flexible的dpr和
 以单屏设计稿为例： 640 * 1136（i5，ISUX给的宽高比则比较合理：320 * 504，减去了标题栏高度），
 另一个极端机子MX4 可视区是384 * 518，
 ![极端](http://images.vrm.cn/2017/02/07/p1.jpg "设计稿")
-那么这种情况下，这样显示比较合理？显然，信息肯定要显示全，排版不能乱。要满足此需求，估计只有缩小元素了吧，如果有更好的点子还望不吝赐教。
+那么这种情况下，这样显示比较合理？显然，信息肯定要显示全，排版不能乱。要满足此需求，只能缩小元素填充视口。
 ![排版](http://images.vrm.cn/2017/02/07/p2.jpg "设计稿")
 
 ### 如何用高度计算fontSize
